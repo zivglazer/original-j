@@ -270,6 +270,10 @@
       dispatchEvent(new Event("resize"));
       body.scrollTop = 0;
       try { history.replaceState(null, "", `#${item.code}-${variant}`); } catch (e) {}
+      // Count each opened piece as its own page in the visit stats.
+      if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path: `${location.pathname}#${item.code}-${variant}`, title: `${cat.title}: ${(window.NAMES || {})[item.code] || item.code}` });
+      }
     };
     const close = () => dialog.close();
     dialog.querySelector(".dialog-close").addEventListener("click", close);
@@ -512,5 +516,14 @@
     });
 
     return section;
+  }
+
+  // Visit stats (GoatCounter, dashboard at original.goatcounter.com): counted only on the live site.
+  if (location.hostname === "zivglazer.github.io") {
+    const gc = document.createElement("script");
+    gc.async = true;
+    gc.src = "https://gc.zgo.at/count.js";
+    gc.dataset.goatcounter = "https://original.goatcounter.com/count";
+    document.body.appendChild(gc);
   }
 })();
