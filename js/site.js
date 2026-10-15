@@ -19,6 +19,17 @@
     { id: "gold", label: "זהב 14K", swatch: "#c9a24a" }
   ];
 
+  // Discounts and photo lists set from the admin page (js/shop.js).
+  const SHOP = window.SHOP || {};
+  data.categories.forEach((c) => c.items.forEach((it) => {
+    const list = (SHOP.photos || {})[it.code];
+    if (Array.isArray(list) && list.length) it.photos = list;
+  }));
+  const pctOff = (code) => Number((SHOP.discounts || {})[code]) || 0;
+  const isNum = (v) => /^\d+(\.\d+)?$/.test(String(v || "").trim());
+  // The price after the piece's own discount, rounded to whole shekels.
+  const withOff = (code, v) => (pctOff(code) && isNum(v) ? String(Math.round(Number(v) * (100 - pctOff(code)) / 100)) : v);
+
 
   const waLink = (text) =>
     `https://wa.me/${data.contact.whatsapp}?text=${encodeURIComponent(text)}`;
@@ -101,7 +112,7 @@
     const list = drawer.querySelector(".cart-list");
     list.replaceChildren();
     cart.forEach((it, i) => {
-      const price = it.price || priceOf(it.code, it.variant);
+      const price = withOff(it.code, it.price || priceOf(it.code, it.variant));
       const li = document.createElement("li");
       li.className = "cart-item";
       li.innerHTML = `
@@ -126,7 +137,7 @@
     });
     drawer.querySelector(".cart-empty").hidden = cart.length > 0;
     drawer.querySelector(".cart-foot").hidden = cart.length === 0;
-    const nums = cart.map((it) => priceNum(it.price || priceOf(it.code, it.variant)));
+    const nums = cart.map((it) => priceNum(withOff(it.code, it.price || priceOf(it.code, it.variant))));
     const subtotal = cart.length && nums.every((n) => n !== null) ? nums.reduce((sum, n, i) => sum + n * cart[i].qty, 0) : null;
 
     // Set discounts: each complete set (one of every code) takes `off`% off those pieces.
@@ -198,11 +209,26 @@
   function priceText(code, variant, fixed) {
     const v = fixed || priceFor(code, variant);
     if (!v) return `מחיר: <span class="price-empty">___</span>`;
+    if (pctOff(code) && isNum(v)) {
+      return `מחיר: <s class="price-was">${v} ₪</s> <span class="price-value">${withOff(code, v)} ₪</span> <span class="price-off">${pctOff(code)}% הנחה</span>`;
+    }
     return `מחיר: <span class="price-value">${/^[\d.,]+$/.test(v) ? `${v} ₪` : v}</span>`;
+  }
+
+  // The first photo of a piece for one version (metal), when the admin page set its photo list.
+  function photoFor(item, id) {
+    const list = item.photos || [];
+    return (item.single ? list[0] : list.find((p) => !p.metal || p.metal === id)) || null;
   }
 
   // Each piece shows once per metal: silver next to gold.
   function variantsOf(item, cat) {
+    const list = baseVariants(item, cat);
+    if (item.photos) list.forEach((v) => { const p = photoFor(item, v.id); if (p) v.img = p.img; });
+    return list;
+  }
+
+  function baseVariants(item, cat) {
     if (item.metalIncluded) return item.options.map((o) => ({ ...o }));
     if (item.single) {
       const img = (item.extras.find((x) => x.first) || item.options.find((o) => o.img) || item.extras[0] || {}).img;
@@ -272,7 +298,7 @@
           <span class="thumb-metal">${v.label}</span>
           ${item.note ? `<span class="thumb-note">${item.note}</span>` : ""}
           ${(window.SOLD || []).includes(item.code) ? `<span class="sold-out">נמכר</span>` : (window.SOLD_OUT || []).includes(item.code) ? `<span class="sold-out">נגמר במלאי</span>` : ""}
-          ${(window.SOLD || []).includes(item.code) ? "" : `<span class="thumb-price">${item.options.length && item.options.every((o) => o.price) ? `${[...new Set(item.options.map((o) => o.price))].join(" / ")} ₪` : priceText(item.code, v.id)}</span>`}`);
+          ${(window.SOLD || []).includes(item.code) ? "" : `<span class="thumb-price">${item.options.length && item.options.every((o) => o.price) ? `${[...new Set(item.options.map((o) => withOff(item.code, o.price)))].join(" / ")} ₪` : priceText(item.code, v.id)}</span>`}`);
         a.addEventListener("click", (e) => { e.preventDefault(); open(item, idx, v.id); });
         list.appendChild(a);
         n += 1;
@@ -326,9 +352,16 @@
     const allOptions = groups.flatMap((g) => g.options);
 
     const frames = [];
-    item.extras.filter((x) => x.first).forEach((x) => frames.push({ ...x, kind: "extra" }));
-    allOptions.filter((o) => o.img).forEach((o) => frames.push({ ...o, kind: "option" }));
-    item.extras.filter((x) => !x.first && (!x.metal || x.metal === v.id)).forEach((x) => frames.push({ ...x, kind: "extra" }));
+    if (item.photos) {
+      // Photo list from the admin page: a photo shows for every version, or only for its own metal or option.
+      item.photos
+        .filter((p) => !p.metal || p.metal === v.id || allOptions.some((o) => o.id === p.metal))
+        .forEach((p) => frames.push({ img: p.img, label: p.label || "", id: p.id || p.metal || undefined, kind: p.metal && p.metal !== v.id ? "option" : "extra" }));
+    } else {
+      item.extras.filter((x) => x.first).forEach((x) => frames.push({ ...x, kind: "extra" }));
+      allOptions.filter((o) => o.img).forEach((o) => frames.push({ ...o, kind: "option" }));
+      item.extras.filter((x) => !x.first && (!x.metal || x.metal === v.id)).forEach((x) => frames.push({ ...x, kind: "extra" }));
+    }
     // Never show the same photo twice in one gallery.
     for (let i = frames.length - 1; i >= 0; i--) {
       if (frames.findIndex((f) => f.img === frames[i].img) !== i) frames.splice(i, 1);
@@ -346,7 +379,7 @@
       </div>
       <div class="choices"></div>
       ${item.note ? `<p class="piece-note">${item.note}</p>` : ""}
-      <p class="price"${(window.SOLD || []).includes(item.code) ? "hidden" : ""}>${item.options[0] && item.options[0].price ? priceText("", "", item.options[0].price) : priceText(item.code, v.id)}</p>
+      <p class="price"${(window.SOLD || []).includes(item.code) ? "hidden" : ""}>${item.options[0] && item.options[0].price ? priceText(item.code, "", item.options[0].price) : priceText(item.code, v.id)}</p>
       <div class="piece-actions">
         <button class="add-cart" type="button">הוספה לסל</button>
         <a class="ask ask-ghost" target="_blank" rel="noopener">לשאול על ה${noun} בוואטסאפ</a>
@@ -424,7 +457,7 @@
     groups.forEach((g) => {
       g.el.addEventListener("change", () => {
         const o = selected(g);
-        if (o.price) section.querySelector(".price").innerHTML = priceText("", "", o.price);
+        if (o.price) section.querySelector(".price").innerHTML = priceText(item.code, "", o.price);
         const target = o.goto || (o.img ? o.id : null);
         if (target) goTo(figs.find((f) => f.dataset.id === target));
         updateAsk();

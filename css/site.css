@@ -433,3 +433,7 @@ a { color: inherit; }
 .qty-btn:hover:not(:disabled) { background: rgba(0,0,0,.05); }
 .qty-btn:disabled { color: var(--ink-soft); opacity: .4; cursor: default; }
 .qty-num { min-width: 24px; text-align: center; font-size: 14px; }
+
+/* Discounted price */
+.price-was { color: var(--ink-soft); font-weight: 300; }
+.price-off { font-size: .8em; letter-spacing: .04em; color: var(--gold); white-space: nowrap; }

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ניהול · original_j_</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap">
+  <link rel="stylesheet" href="css/admin.css?v=202610160006">
+</head>
+<body>
+  <header class="adm-bar">
+    <span class="adm-brand"><bdi dir="ltr">_ORIGINAL_J</bdi> <small>ניהול</small></span>
+    <span class="adm-status" id="status" role="status" aria-live="polite"></span>
+    <button class="adm-save" id="save" type="button" hidden>שמירה ופרסום</button>
+  </header>
+
+  <main class="adm-main">
+    <!-- First time on this phone: paste the GitHub key and choose a password -->
+    <section class="adm-card" id="setup" hidden>
+      <h1>חיבור ראשון</h1>
+      <p>מדביקים את המפתח מ-GitHub ובוחרים סיסמה. המפתח נשמר מוצפן רק בטלפון הזה, ובפעם הבאה מספיקה הסיסמה.</p>
+      <label>המפתח מ-GitHub<textarea id="setup-token" rows="3" dir="ltr" autocomplete="off" spellcheck="false" placeholder="github_pat_..."></textarea></label>
+      <label>סיסמה חדשה<input id="setup-pass" type="password" autocomplete="new-password"></label>
+      <label>שוב את הסיסמה<input id="setup-pass2" type="password" autocomplete="new-password"></label>
+      <button class="adm-btn" id="setup-go" type="button">שמירה וכניסה</button>
+      <p class="adm-small"><button class="adm-link" type="button" data-demo>רק להציץ, בלי לשמור</button></p>
+    </section>
+
+    <!-- Later visits: password only -->
+    <section class="adm-card" id="login" hidden>
+      <h1>כניסה לניהול</h1>
+      <label>סיסמה<input id="login-pass" type="password" autocomplete="current-password"></label>
+      <button class="adm-btn" id="login-go" type="button">כניסה</button>
+      <p class="adm-small">
+        <button class="adm-link" type="button" id="login-reset">שכחתי סיסמה / מפתח חדש</button> ·
+        <button class="adm-link" type="button" data-demo>רק להציץ, בלי לשמור</button>
+      </p>
+    </section>
+
+    <section id="editor" hidden>
+      <p class="adm-hint" id="mode-note"></p>
+      <input class="adm-search" id="search" type="search" placeholder="חיפוש לפי שם או קוד">
+      <div id="cats"></div>
+      <section class="adm-card" id="sets-card">
+        <h2>הנחות סט</h2>
+        <p class="adm-small">כשהלקוחה קונה את כל התכשיטים של הסט יחד, ההנחה יורדת לבד בסל. קודים מופרדים בפסיק, למשל E02, N02.</p>
+        <div id="sets"></div>
+        <button class="adm-btn ghost" id="set-add" type="button">+ הנחת סט חדשה</button>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/admin.js?v=202610160006"></script>
+</body>
+</html>
