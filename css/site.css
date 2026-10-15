@@ -20,7 +20,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 
 body {
   margin: 0;
@@ -111,6 +111,7 @@ a { color: inherit; }
 .cart-empty { color: var(--ink-soft); margin: 0; }
 .cart-foot { display: grid; gap: 10px; }
 .cart-foot .ask { margin: 0; justify-content: center; }
+.cart-discount { margin: 0; font-size: 14px; letter-spacing: .04em; color: var(--gold); }
 .cart-total { margin: 0; font-family: var(--f-display); font-size: 22px; }
 .cart-note { margin: 0; font-size: 13px; color: var(--ink-soft); }
 
@@ -188,8 +189,6 @@ a { color: inherit; }
   transition: opacity .8s var(--ease);
 }
 .tile-num { display: none; }
-.tile:nth-child(7) { grid-column: 1 / -1; }
-.tile:nth-child(7) .frame-img { aspect-ratio: 16 / 6; }
 .tile-empty { color: var(--ink); }
 .tile-empty .frame-img { background: var(--cream); }
 .tile-empty::after { display: none; }
@@ -282,6 +281,8 @@ a { color: inherit; }
 .thumb:hover .frame-img img, .thumb:focus-visible .frame-img img { transform: scale(1.04); }
 .thumb-name { font-family: var(--f-display); font-size: clamp(17px, 1.5vw, 22px); line-height: 1.2; }
 .thumb-metal { font-size: 13px; letter-spacing: .06em; color: var(--gold); }
+.thumb-note, .piece-note { font-size: 14px; letter-spacing: .04em; color: var(--ink); }
+.piece-note { margin: 0 0 4px; }
 .thumb-price { font-size: 14px; letter-spacing: .04em; color: var(--ink-soft); }
 .thumb-price .price-value { color: var(--ink); }
 
@@ -308,7 +309,7 @@ a { color: inherit; }
 }
 .dialog-close:hover { border-color: var(--gold); }
 .piece-dialog .piece { animation: none; }
-.piece-dialog .piece-head { padding-inline-end: calc(var(--gutter) + 48px); }
+.piece-dialog .piece-head { padding-inline-end: calc(var(--gutter) + 64px); }
 @keyframes dialog-in { from { opacity: 0; transform: translateY(16px); } }
 @keyframes fade-in { from { opacity: 0; } }
 
@@ -406,7 +407,6 @@ a { color: inherit; }
   .strip-btn { display: none; }
   .frame { width: 82vw; }
   .tile-title { font-size: clamp(22px, 6.4vw, 32px); }
-    .tile:nth-child(7) .frame-img { aspect-ratio: 16 / 9; }
 }
 @media (max-width: 760px) {
   .thumbs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -417,3 +417,19 @@ a { color: inherit; }
   .thumb-price { font-size: 12px; }
 }
 .handle { unicode-bidi: isolate; direction: ltr; }
+
+/* The gift card image already carries its own title. */
+.tile-gift::after { display: none; }
+.tile-gift .tile-title { clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; white-space: nowrap; }
+.tile-gift .frame-img img { object-fit: contain; background: #4a3b3b; }
+
+/* Out of stock */
+.sold-out { font-size: 14px; letter-spacing: .04em; color: var(--ink); }
+.add-cart:disabled { background: var(--cream-2); color: var(--ink-soft); cursor: default; }
+
+/* Cart quantity */
+.cart-qty { display: inline-flex; align-items: center; gap: 2px; margin-top: 6px; border: 1px solid var(--cream-2); width: max-content; }
+.qty-btn { width: 32px; height: 32px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 16px; line-height: 1; cursor: pointer; }
+.qty-btn:hover:not(:disabled) { background: rgba(0,0,0,.05); }
+.qty-btn:disabled { color: var(--ink-soft); opacity: .4; cursor: default; }
+.qty-num { min-width: 24px; text-align: center; font-size: 14px; }

@@ -1,6 +1,19 @@
 (function () {
   const data = window.CATALOG;
   const page = document.body.dataset.page;
+
+  // A new page always opens at its top. The back button keeps its place.
+  // scrollIntoView also brings the top into view when the site is shown inside another page's frame.
+  const navEntry = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+  if (!location.hash && !(navEntry && navEntry.type === "back_forward")) {
+    const toTop = () => {
+      scrollTo(0, 0);
+      try { document.documentElement.scrollIntoView(true); } catch (e) {}
+    };
+    toTop();
+    requestAnimationFrame(toTop);
+    addEventListener("load", toTop, { once: true });
+  }
   const METALS = [
     { id: "silver", label: "כסף 925", swatch: "#c9ccd0" },
     { id: "gold", label: "זהב 14K", swatch: "#c9a24a" }
@@ -63,6 +76,7 @@
     <ul class="cart-list"></ul>
     <p class="cart-empty">הסל ריק. אפשר להוסיף תכשיט מכל קטגוריה.</p>
     <div class="cart-foot">
+      <p class="cart-discount" hidden></p>
       <p class="cart-total"></p>
       <a class="ask cart-send" target="_blank" rel="noopener">שליחת ההזמנה בוואטסאפ</a>
       <p class="cart-note">ההזמנה נשלחת בוואטסאפ, ומשם מתאמים תשלום ומשלוח.</p>
@@ -78,13 +92,16 @@
   };
   const priceNum = (v) => (/^[\d.,]+$/.test(v) ? parseFloat(v.replace(/,/g, "")) : null);
 
+  // One of a Kind pieces exist in a single copy, so their quantity stays 1.
+  const oneOff = (code) => ((data.categories.find((c) => c.id === "unique") || { items: [] }).items).some((it) => it.code === code);
+
   function renderCart() {
     const count = cart.reduce((n, it) => n + it.qty, 0);
     document.querySelectorAll("[data-cart-count]").forEach((el) => { el.textContent = count; el.hidden = count === 0; });
     const list = drawer.querySelector(".cart-list");
     list.replaceChildren();
     cart.forEach((it, i) => {
-      const price = priceOf(it.code, it.variant);
+      const price = it.price || priceOf(it.code, it.variant);
       const li = document.createElement("li");
       li.className = "cart-item";
       li.innerHTML = `
@@ -92,26 +109,56 @@
         <div class="cart-info">
           <span class="cart-name">${it.title}</span>
           <span class="cart-picks">${it.picks || ""}</span>
-          <span class="cart-price">${price ? (priceNum(price) !== null ? `${price} ₪` : price) : "מחיר: ___"}${it.qty > 1 ? ` · ×${it.qty}` : ""}</span>
+          <span class="cart-price">${price ? (priceNum(price) !== null ? `${price} ₪${it.qty > 1 ? ` · יחד ${priceNum(price) * it.qty} ₪` : ""}` : price) : "מחיר: ___"}</span>
+          ${oneOff(it.code) ? "" : `<span class="cart-qty" role="group" aria-label="כמות">
+            <button type="button" class="qty-btn" data-step="1" aria-label="להוסיף אחד">+</button>
+            <span class="qty-num" aria-live="polite">${it.qty}</span>
+            <button type="button" class="qty-btn" data-step="-1" aria-label="להוריד אחד" ${it.qty <= 1 ? "disabled" : ""}>−</button>
+          </span>`}
         </div>
         <button class="cart-remove" type="button">הסרה</button>`;
       li.querySelector(".cart-remove").addEventListener("click", () => { cart.splice(i, 1); saveCart(); });
+      li.querySelectorAll(".qty-btn").forEach((btn) => btn.addEventListener("click", () => {
+        it.qty = Math.max(1, it.qty + Number(btn.dataset.step));
+        saveCart();
+      }));
       list.appendChild(li);
     });
     drawer.querySelector(".cart-empty").hidden = cart.length > 0;
     drawer.querySelector(".cart-foot").hidden = cart.length === 0;
-    const nums = cart.map((it) => priceNum(priceOf(it.code, it.variant)));
-    const total = cart.length && nums.every((n) => n !== null) ? nums.reduce((sum, n, i) => sum + n * cart[i].qty, 0) : null;
+    const nums = cart.map((it) => priceNum(it.price || priceOf(it.code, it.variant)));
+    const subtotal = cart.length && nums.every((n) => n !== null) ? nums.reduce((sum, n, i) => sum + n * cart[i].qty, 0) : null;
+
+    // Set discounts: each complete set (one of every code) takes `off`% off those pieces.
+    const discounts = [];
+    (window.SETS || []).forEach((set) => {
+      const units = set.codes.map((code) => cart.flatMap((it, i) => (it.code === code && nums[i] !== null ? Array(it.qty).fill(nums[i]) : [])));
+      const pairs = Math.min(...units.map((u) => u.length));
+      if (!pairs) return;
+      const amount = Math.round(units.reduce((sum, u) => sum + u.slice(0, pairs).reduce((a, b) => a + b, 0), 0) * set.off / 100);
+      if (amount) discounts.push({ label: `הנחת ${set.name} (${set.off}%)${pairs > 1 ? ` ×${pairs}` : ""}`, amount });
+    });
+    const total = subtotal !== null ? subtotal - discounts.reduce((s, d) => s + d.amount, 0) : null;
+    const discountText = discounts.map((d) => `${d.label}: −${d.amount} ₪`);
+    drawer.querySelector(".cart-discount").textContent = discountText.join(" · ");
+    drawer.querySelector(".cart-discount").hidden = !discounts.length;
     drawer.querySelector(".cart-total").textContent = total !== null ? `סה״כ: ${total} ₪` : "";
     const lines = cart.map((it) => `• ${it.title} (${it.code})${it.picks ? `, ${it.picks}` : ""}${it.qty > 1 ? ` ×${it.qty}` : ""}`);
-    drawer.querySelector(".cart-send").href = waLink(`שלום, אשמח להזמין:\n${lines.join("\n")}`);
+    const extra = [...discountText, ...(total !== null && discounts.length ? [`סה״כ: ${total} ₪`] : [])];
+    drawer.querySelector(".cart-send").href = waLink(`שלום, אשמח להזמין:\n${[...lines, ...extra].join("\n")}`);
   }
   window.addToCart = (entry) => {
     const same = cart.find((it) => it.code === entry.code && it.picks === entry.picks);
-    if (same) same.qty += 1; else cart.push({ ...entry, qty: 1 });
+    if (same) { if (!oneOff(entry.code)) same.qty += 1; } else cart.push({ ...entry, qty: 1 });
     saveCart();
   };
   renderCart();
+
+  // Amounts with their own price (the gift card) can be edited in prices.js, e.g. GIFT_200.
+  data.categories.forEach((c) => c.items.forEach((it) => it.options.forEach((o) => {
+    const v = ((window.PRICES || {})[`${it.code}_${o.id}`] || "").trim();
+    if ("price" in o && v) o.price = v;
+  })));
 
   if (page === "home") renderHome();
   else if (page) renderCategory(page);
@@ -148,8 +195,8 @@
     return ((variant && P[`${code}_${variant}`]) || P[code] || "").trim();
   }
 
-  function priceText(code, variant) {
-    const v = priceFor(code, variant);
+  function priceText(code, variant, fixed) {
+    const v = fixed || priceFor(code, variant);
     if (!v) return `מחיר: <span class="price-empty">___</span>`;
     return `מחיר: <span class="price-value">${/^[\d.,]+$/.test(v) ? `${v} ₪` : v}</span>`;
   }
@@ -206,7 +253,11 @@
     });
 
     let n = 0;
-    cat.items.forEach((item, idx) => {
+    // Sold pieces always go last; everything still for sale stays on top, in catalog order.
+    const isSoldItem = (it) => (window.SOLD || []).includes(it.code);
+    const ordered = cat.items.map((item, idx) => ({ item, idx }));
+    ordered.sort((a, b) => isSoldItem(a.item) - isSoldItem(b.item) || a.idx - b.idx);
+    ordered.forEach(({ item, idx }) => {
       const given = ((window.NAMES || {})[item.code] || "").trim();
       const noun = item.noun || cat.noun;
       const name = given || `${noun} ${item.code}`;
@@ -219,7 +270,9 @@
         a.insertAdjacentHTML("beforeend", `
           <span class="thumb-name">${name}</span>
           <span class="thumb-metal">${v.label}</span>
-          <span class="thumb-price">${priceText(item.code, v.id)}</span>`);
+          ${item.note ? `<span class="thumb-note">${item.note}</span>` : ""}
+          ${(window.SOLD || []).includes(item.code) ? `<span class="sold-out">נמכר</span>` : (window.SOLD_OUT || []).includes(item.code) ? `<span class="sold-out">נגמר במלאי</span>` : ""}
+          ${(window.SOLD || []).includes(item.code) ? "" : `<span class="thumb-price">${item.options.length && item.options.every((o) => o.price) ? `${[...new Set(item.options.map((o) => o.price))].join(" / ")} ₪` : priceText(item.code, v.id)}</span>`}`);
         a.addEventListener("click", (e) => { e.preventDefault(); open(item, idx, v.id); });
         list.appendChild(a);
         n += 1;
@@ -249,10 +302,26 @@
     const groups = [];
     if (item.metalIncluded) {
       groups.push({ label: cat.choiceLabel, options: [v] });
+    } else if (item.single && item.options.some((o) => o.id === "silver" || o.id === "gold")) {
+      // One piece offered in both metals: the metal is a choice inside the piece.
+      groups.push({ label: "חומר", options: item.options });
     } else {
       const others = item.options.filter((o) => o.id !== "silver" && o.id !== "gold");
       if (others.length) groups.push({ label: cat.choiceLabel, options: others });
       if (!item.single) groups.push({ label: "חומר", options: [v] });
+    }
+    if (item.cords) {
+      // A cord instead of the metal chain costs cordDiscount less than the chain.
+      const base = priceFor(item.code, v.id);
+      const less = /^\d+$/.test(base) ? String(Number(base) - (item.cordDiscount || 0)) : "";
+      groups.push({ label: "שרשרת או חוט", options: [
+        { id: "chain", label: `שרשרת ${v.id === "gold" ? "זהב" : "כסף"}`, price: base },
+        ...item.cords.map((c) => ({ ...c, id: `cord-${c.id}`, label: `חוט ${c.label}`, price: less, goto: "cords" }))
+      ] });
+    }
+    if (item.sizes) {
+      const unit = item.sizeUnit ? ` ${item.sizeUnit}` : "";
+      groups.push({ label: "מידה", options: item.sizes.map((n, i) => ({ id: `size-${i}`, label: `${n}${unit}`, pick: `מידה ${n}${unit}` })) });
     }
     const allOptions = groups.flatMap((g) => g.options);
 
@@ -276,7 +345,8 @@
         <button class="strip-btn next" type="button" aria-label="תמונה הבאה">←</button>
       </div>
       <div class="choices"></div>
-      <p class="price">${priceText(item.code, v.id)}</p>
+      ${item.note ? `<p class="piece-note">${item.note}</p>` : ""}
+      <p class="price"${(window.SOLD || []).includes(item.code) ? "hidden" : ""}>${item.options[0] && item.options[0].price ? priceText("", "", item.options[0].price) : priceText(item.code, v.id)}</p>
       <div class="piece-actions">
         <button class="add-cart" type="button">הוספה לסל</button>
         <a class="ask ask-ghost" target="_blank" rel="noopener">לשאול על ה${noun} בוואטסאפ</a>
@@ -325,16 +395,22 @@
       return input && g.options.find((o) => o.id === input.value);
     };
     const updateAsk = () => {
-      const picks = groups.map((g) => selected(g)).filter(Boolean).map((o) => o.label).join(", ");
+      const picks = groups.map((g) => selected(g)).filter(Boolean).map((o) => o.pick || o.label).join(", ");
       ask.href = waLink(`שלום, אשמח לפרטים על ${title} (${item.code}, ${cat.title})${picks ? `, ${picks}` : ""}`);
     };
     updateAsk();
 
     const addBtn = section.querySelector(".add-cart");
+    const isSold = (window.SOLD || []).includes(item.code);
+    if (isSold || (window.SOLD_OUT || []).includes(item.code)) {
+      addBtn.disabled = true;
+      addBtn.textContent = isSold ? "נמכר" : "נגמר במלאי";
+    }
     addBtn.addEventListener("click", () => {
-      const picks = groups.map((g) => selected(g)).filter(Boolean).map((o) => o.label).join(", ");
+      const picks = groups.map((g) => selected(g)).filter(Boolean).map((o) => o.pick || o.label).join(", ");
       const shown = figs[active] ? figs[active].querySelector("img") : null;
-      window.addToCart({ code: item.code, variant: v.id, title, picks, img: shown ? shown.getAttribute("src") : "" });
+      const priced = groups.map((g) => selected(g)).find((o) => o && o.price);
+      window.addToCart({ code: item.code, variant: v.id, title, picks, price: priced ? priced.price : "", img: shown ? shown.getAttribute("src") : "" });
       addBtn.textContent = "נוסף לסל ✓";
       setTimeout(() => { addBtn.textContent = "הוספה לסל"; }, 1800);
     });
@@ -348,6 +424,7 @@
     groups.forEach((g) => {
       g.el.addEventListener("change", () => {
         const o = selected(g);
+        if (o.price) section.querySelector(".price").innerHTML = priceText("", "", o.price);
         const target = o.goto || (o.img ? o.id : null);
         if (target) goTo(figs.find((f) => f.dataset.id === target));
         updateAsk();

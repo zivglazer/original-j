@@ -32,25 +32,46 @@ window.CATALOG = {
           extras: [
             { label: "זהב", img: "images/earrings/e01-gold-flat.jpg", metal: "gold" },
             { label: "כסף", img: "images/earrings/e01-silver-flat.jpg", metal: "silver" },
-            { label: "שני הצבעים", img: "images/earrings/e01-both.jpg" }
+            { label: "שני הצבעים", img: "images/earrings/e01-both.jpg" },
+            { label: "על הדוגמנית", img: "images/earrings/e01-silver-model2.jpg", metal: "silver" },
+            { label: "על הדוגמנית", img: "images/earrings/e01-gold-model.jpg", metal: "gold" }
           ]
         },
         {
           code: "E02", name: "E02",
+          note: "סט דורי (שרשרת + עגילים): 10% הנחה על שניהם",
           options: [metal(GOLD, "images/earrings/e02-gold.jpg"), metal(SILVER, "images/earrings/e02-silver.jpg")],
-          extras: [{ label: "על הדוגמנית", img: "images/earrings/e02-model.jpg", metal: "gold" }]
+          extras: [
+            { label: "על הדוגמנית", img: "images/earrings/e02-model.jpg", metal: "gold" },
+            { label: "על הדוגמנית", img: "images/earrings/e02-gold-model2.jpg", metal: "gold" },
+            { label: "על הדוגמנית", img: "images/earrings/e02-silver-model.jpg", metal: "silver" }
+          ]
         },
         {
           code: "E03", name: "E03",
-          options: [metal(SILVER, "images/earrings/e03-silver.jpg"), metal(GOLD, "images/earrings/e03-gold.jpg")],
-          extras: [{ label: "הזוג", img: "images/earrings/e03-pair.jpg" }]
+          options: [metal(SILVER, "images/earrings/e03-silver.jpg"), metal(GOLD, "images/earrings/e03-gold-1.jpg")],
+          extras: [
+            { label: "זהב 14K", img: "images/earrings/e03-gold.jpg", metal: "gold" },
+            { label: "הזוג", img: "images/earrings/e03-pair.jpg", metal: "silver" },
+            { label: "על הדוגמנית", img: "images/earrings/e03-silver-model.jpg", metal: "silver" },
+            { label: "על הדוגמנית", img: "images/earrings/ear-stack-model.jpg", metal: "silver" }
+          ]
         },
         {
           code: "E04", name: "E04",
-          options: [metal(SILVER, "images/earrings/e04-silver.jpg")],
+          options: [metal(SILVER, "images/earrings/e04-silver.jpg"), metal(GOLD, "images/earrings/e04-gold.jpg")],
           extras: [
-            { label: "הזוג", img: "images/earrings/e04-flat.jpg" },
-            { label: "על הדוגמנית", img: "images/earrings/e04-model.jpg" }
+            { label: "על הדוגמנית", img: "images/earrings/e04-model.jpg", metal: "silver" },
+            { label: "על הדוגמנית", img: "images/earrings/ear-stack-model.jpg", metal: "silver" }
+          ]
+        },
+        {
+          code: "E05", name: "E05",
+          // עגילי שקד
+          options: [metal(SILVER, "images/earrings/e05-silver.jpg"), metal(GOLD, "images/earrings/e05-gold-1.jpg")],
+          extras: [
+            { label: "הזוג", img: "images/earrings/e04-flat.jpg", metal: "silver" },
+            { label: "על הדוגמנית", img: "images/earrings/e05-silver-model.jpg", metal: "silver" }
           ]
         }
       ]
@@ -66,10 +87,12 @@ window.CATALOG = {
       items: [
         {
           code: "R01", name: "R01",
+          sizes: ["15", "15.5", "16", "16.5", "17", "17.5", "18"], // מידות טבעת לבחירה
           options: [metal(GOLD, "images/rings/r01-gold.jpg"), metal(SILVER, "images/rings/r01-silver.jpg")],
           extras: [
             { label: "שני הצבעים יחד", img: "images/rings/r01-both.jpg" },
-            { label: "על היד", img: "images/rings/r01-model.jpg", metal: "gold" }
+            { label: "על היד", img: "images/rings/r01-model.jpg", metal: "gold" },
+            { label: "על הדוגמנית", img: "images/rings/rings-gold-hands.jpg", metal: "gold" }
           ]
         },
         {
@@ -78,30 +101,42 @@ window.CATALOG = {
           extras: [
             { label: "שני הצבעים יחד", img: "images/rings/r02-both.jpg" },
             { label: "טבעת פתוחה", img: "images/rings/r02-open.jpg" },
-            { label: "על היד", img: "images/rings/r02-model.jpg" }
+            { label: "על היד", img: "images/rings/r02-model.jpg", metal: "silver" },
+            { label: "על הדוגמנית", img: "images/rings/rings-gold-hands.jpg", metal: "gold" },
+            { label: "על היד", img: "images/rings/rings-hand.jpg", metal: "silver" }
           ]
         },
         {
           code: "R03", name: "R03",
+          sizes: ["15", "15.5", "16", "16.5", "17", "17.5", "18"], // מידות טבעת לבחירה
           metals: ["silver"], // בכסף בלבד
           options: [metal(SILVER, "images/rings/r03-silver.jpg")],
-          extras: [{ label: "מלמעלה", img: "images/rings/r03-flat.jpg" }]
+          extras: [
+            { label: "מלמעלה", img: "images/rings/r03-flat.jpg" },
+            { label: "על היד", img: "images/rings/rings-hand.jpg", metal: "silver" }
+          ]
         },
         {
           code: "R04", name: "R04",
+          sizes: ["15", "15.5", "16", "16.5", "17", "17.5", "18"], // מידות טבעת לבחירה
           metals: ["silver"], // בכסף בלבד
           options: [metal(SILVER, "images/rings/r04-silver.jpg")],
           extras: [
             { label: "מלמעלה", img: "images/rings/r04-flat.jpg" },
-            { label: "על היד", img: "images/rings/r04-model.jpg" }
+            { label: "על היד", img: "images/rings/r04-model.jpg" },
+            { label: "על היד", img: "images/rings/rings-hand.jpg", metal: "silver" }
           ]
         },,
         {
           code: "R07", name: "R07",
+          sizes: ["15", "15.5", "16", "16.5", "17", "14 (זרת)", "14.5 (זרת)"], // מידות טבעת לבחירה, כולל זרת
           // סט אחד: טבעת זהב וטבעת כסף יחד
           metalIncluded: true,
           options: [{ id: "set", label: "זהב 14K + כסף 925", img: "images/rings/r07-set.jpg" }],
-          extras: [{ label: "הסט מלמעלה", img: "images/rings/r07-set-flat.jpg" }]
+          extras: [
+            { label: "הסט מלמעלה", img: "images/rings/r07-set-flat.jpg" },
+            { label: "על הדוגמנית", img: "images/rings/rings-gold-hands.jpg" }
+          ]
         }
       ]
     },
@@ -117,31 +152,22 @@ window.CATALOG = {
         {
           code: "OM",
           name: "צמיד אום",
-          metalIncluded: true,
+          single: true, // פריט אחד עם בחירה בין שני הסוגים
+          singleLabel: "כסף · חוט אדום / זהב · חוט חום",
           options: [
-            { id: "red-silver", label: "חוט אדום · כסף 925", swatch: "#b3262e", img: "images/bracelets/om-red-silver.jpg" },
-            { id: "brown-gold", label: "חוט חום · זהב 14K", swatch: "#6b4a32", img: "images/bracelets/om-brown-gold.jpg" }
+            { id: "red-silver", label: "כסף · חוט אדום", swatch: "#b3262e", img: "images/bracelets/om-red-silver.jpg" },
+            { id: "brown-gold", label: "זהב · חוט חום", swatch: "#6b4a32", img: "images/bracelets/om-brown-gold.jpg" }
           ],
           extras: [
-            { label: "שני הסוגים", img: "images/bracelets/om-both.jpg" },
-            { label: "על היד", img: "images/bracelets/om-model.jpg", metal: "red-silver" }
+            { label: "צמידי אום", img: "images/bracelets/om-pair.jpg", first: true }
           ]
         },
         {
-          code: "B02", name: "צמיד ORIGINAL",
-          single: true, // סוג אחד בלבד
-          singleLabel: "שרשרת כסף 925 · לוחית זהב 14K",
-          options: [],
-          extras: [
-            { label: "הצמיד", img: "images/bracelets/b02.jpg" },
-            { label: "על היד", img: "images/bracelets/b02-model.jpg" }
-          ]
-        },
-        {
-          code: "B03", name: "B03",
+          code: "OG01", name: "OG01", noun: "צמיד",
+          // צמיד אגם: צמיד שרשראות כסף עם חרוז מרובע
           metals: ["silver"], // סוג אחד בלבד
-          options: [metal(SILVER, "images/bracelets/b03.jpg")],
-          extras: [{ label: "על היד", img: "images/bracelets/b03-model.jpg" }]
+          options: [metal(SILVER, "images/unique/og01-model.jpg")],
+          extras: [{ label: "הצמיד", img: "images/unique/og01.jpg" }]
         }
       ]
     },
@@ -158,18 +184,52 @@ window.CATALOG = {
           code: "N01", name: "N01",
           // שרשרת דקה עם תליון ריבועי קטן
           options: [metal(SILVER, "images/necklaces/n01-silver.jpg"), metal(GOLD, "images/necklaces/n01-model.jpg")],
-          extras: []
+          // אפשר לבחור חוט במקום שרשרת: המחיר זול ב-30 ₪ ממחיר השרשרת
+          cords: [
+            { id: "red", label: "אדום", swatch: "#b3262e" },
+            { id: "green", label: "ירוק", swatch: "#6b7f2a" },
+            { id: "brown", label: "חום", swatch: "#4a2f22" },
+            { id: "white", label: "לבן", swatch: "#f1efe8" }
+          ],
+          cordDiscount: 30,
+          extras: [{ id: "cords", label: "צבעי החוט", img: "images/necklaces/n01-cords.jpg" }]
         },
         {
           code: "N03", name: "N03",
-          // שרשרת חוליות עם לוחית מלבנית
-          options: [metal(GOLD, "images/necklaces/n01-gold.jpg")],
-          extras: []
+          // שרשרת חוליות עם לוחית מלבנית: פריט אחד עם בחירה בין כסף לזהב
+          single: true,
+          singleLabel: "כסף 925 / זהב 14K",
+          options: [
+            { id: "silver", label: "כסף 925", swatch: "#c9ccd0", price: "" },
+            { id: "gold", label: "זהב 14K", swatch: "#c9a24a", price: "" }
+          ],
+          extras: [
+            { label: "השרשרת", img: "images/necklaces/n03-closeup.jpg", first: true },
+            { label: "על הדוגמנית", img: "images/necklaces/n03-model.jpg" },
+            { label: "השרשרת", img: "images/necklaces/n03.jpg" }
+          ]
         },
         {
           code: "N02", name: "N02",
-          options: [],
-          extras: [{ label: "על הדוגמנית", img: "images/necklaces/n02.jpg" }]
+          note: "סט דורי (שרשרת + עגילים): 10% הנחה על שניהם",
+          options: [metal(SILVER, "images/necklaces/n02-silver.jpg"), metal(GOLD, "images/necklaces/n02-gold.jpg")],
+          extras: [{ label: "על הדוגמנית", img: "images/necklaces/n02.jpg", metal: "silver" }]
+        },
+        {
+          code: "N04", name: "N04",
+          // שרשרת דייזי: פריט אחד עם בחירה בין כסף לזהב
+          single: true,
+          singleLabel: "כסף 925 / זהב 14K",
+          options: [
+            { id: "silver", label: "כסף 925", swatch: "#c9ccd0", img: "images/necklaces/n04-silver.jpg", price: "" },
+            { id: "gold", label: "זהב 14K", swatch: "#c9a24a", img: "images/necklaces/n04-gold.jpg", price: "" }
+          ],
+          extras: [
+            { label: "כסף וזהב", img: "images/necklaces/n04.jpg", first: true },
+            { label: "על הדוגמנית", img: "images/necklaces/layered.jpg" },
+            { label: "על הדוגמנית", img: "images/necklaces/n04-model-silver.jpg" },
+            { label: "על הדוגמנית", img: "images/necklaces/ear-stack-model.jpg", metal: "gold" }
+          ]
         }
       ]
     },
@@ -185,14 +245,14 @@ window.CATALOG = {
         {
           code: "OM",
           name: "צמיד אום",
-          metalIncluded: true,
+          single: true, // פריט אחד עם בחירה בין שני הסוגים
+          singleLabel: "כסף · חוט אדום / זהב · חוט חום",
           options: [
-            { id: "red-silver", label: "חוט אדום · כסף 925", swatch: "#b3262e", img: "images/bracelets/om-red-silver.jpg" },
-            { id: "brown-gold", label: "חוט חום · זהב 14K", swatch: "#6b4a32", img: "images/bracelets/om-brown-gold.jpg" }
+            { id: "red-silver", label: "כסף · חוט אדום", swatch: "#b3262e", img: "images/bracelets/om-red-silver.jpg" },
+            { id: "brown-gold", label: "זהב · חוט חום", swatch: "#6b4a32", img: "images/bracelets/om-brown-gold.jpg" }
           ],
           extras: [
-            { label: "שני הסוגים", img: "images/bracelets/om-both.jpg" },
-            { label: "על היד", img: "images/bracelets/om-model.jpg", metal: "red-silver" }
+            { label: "צמידי אום", img: "images/bracelets/om-pair.jpg", first: true }
           ]
         },
         {
@@ -200,7 +260,15 @@ window.CATALOG = {
           noun: "שרשרת",
           // שרשרת דקה עם תליון אום ריבועי קטן (אותה שרשרת כמו בשרשראות נשים)
           options: [metal(SILVER, "images/necklaces/n01-silver.jpg"), metal(GOLD, "images/necklaces/n01-model.jpg")],
-          extras: []
+          // אפשר לבחור חוט במקום שרשרת: המחיר זול ב-30 ₪ ממחיר השרשרת
+          cords: [
+            { id: "red", label: "אדום", swatch: "#b3262e" },
+            { id: "green", label: "ירוק", swatch: "#6b7f2a" },
+            { id: "brown", label: "חום", swatch: "#4a2f22" },
+            { id: "white", label: "לבן", swatch: "#f1efe8" }
+          ],
+          cordDiscount: 30,
+          extras: [{ id: "cords", label: "צבעי החוט", img: "images/necklaces/n01-cords.jpg" }]
         }
       ]
     },
@@ -218,6 +286,7 @@ window.CATALOG = {
           code: "M01",
           name: "צמיד חוט ליפוף אחד",
           noun: "צמיד",
+          sizes: ["18", "20", "22"], sizeUnit: 'ס"מ', // מידות לבחירה
           // כל צבע מוביל לתמונת החוטים.
           options: [
             { id: "light-brown", label: "חום בהיר", swatch: "#a77b52", goto: "threads" },
@@ -239,6 +308,7 @@ window.CATALOG = {
           code: "M04",
           name: "צמיד חוט שני ליפופים",
           noun: "צמיד",
+          sizes: ["36", "40", "42"], sizeUnit: 'ס"מ', // מידות לבחירה
           options: [
             { id: "light-brown", label: "חום בהיר", swatch: "#a77b52", goto: "threads4" },
             { id: "dark-brown", label: "חום כהה", swatch: "#4a2f22", goto: "threads4" },
@@ -271,17 +341,42 @@ window.CATALOG = {
           name: "שרשרת",
           noun: "שרשרת",
           options: [],
-          extras: [{ label: "על הדוגמן", img: "images/men/m03.jpg" }]
+          extras: [{ label: "על הדוגמן", img: "images/men/m03-2.jpg" }]
+        },
+        {
+          code: "M05",
+          name: "עגיל חישוק קטן",
+          noun: "עגיל",
+          options: [],
+          extras: [{ label: "על הדוגמן", img: "images/men/m05-hoop.jpg" }]
         },
         {
           code: "R05", name: "R05", noun: "טבעת",
+          sizes: ["18", "19", "20", "21"], // מידות טבעת לבחירה
           options: [metal(SILVER, "images/rings/r05-silver.jpg")],
           extras: [{ label: "מהצד", img: "images/rings/r05-top.jpg" }]
-        },
+        }
+      ]
+    },
+    {
+      id: "gift",
+      titleEn: "Gift Card",
+      title: "גיפט קארד",
+      page: "gift-card.html",
+      cover: "images/gift/gift-card.jpg",
+      noun: "גיפט קארד",
+      choiceLabel: "סכום",
+      items: [
         {
-          code: "R06", name: "R06", noun: "טבעת",
-          options: [metal(SILVER, "images/rings/r06-silver.jpg")],
-          extras: []
+          code: "GIFT", name: "Gift Card",
+          single: true,
+          // המחיר של כל סכום כתוב כאן
+          options: [
+            { id: "200", label: "200 ₪", price: "200" },
+            { id: "350", label: "350 ₪", price: "350" },
+            { id: "400", label: "400 ₪", price: "400" }
+          ],
+          extras: [{ label: "Gift Card", img: "images/gift/gift-card.jpg", first: true }]
         }
       ]
     },
@@ -290,11 +385,58 @@ window.CATALOG = {
       titleEn: "One of a Kind",
       title: "One of a Kind",
       page: "one-of-a-kind.html",
-      cover: "", // אין עדיין תמונה
+      cover: "images/unique/og07.jpg",
       noun: "תכשיט",
       choiceLabel: "חומר",
       soon: "כל תכשיט כאן נעשה בעותק אחד בלבד. התכשיטים הראשונים יעלו בקרוב.",
-      items: []
+      metals: ["silver"],
+      items: [
+        {
+          code: "OG02", name: "OG02", noun: "צמיד",
+          // צמיד קשיח פתוח בכסף
+          note: 'לנשים · 14 ס"מ', // מופיע ליד המחיר
+          options: [metal(SILVER, "images/unique/og02.jpg")],
+          extras: [{ label: "על היד", img: "images/unique/og02-model.jpg" }]
+        },
+        {
+          code: "OG03", name: "OG03", noun: "צמיד",
+          single: true,
+          singleLabel: "שרשרת כסף 925 · לוחית זהב 14K",
+          extras: [{ label: "צמיד ORIGINAL", img: "images/unique/og03.jpg", first: true }],
+          options: []
+        },
+        {
+          code: "OG555", name: "OG555", noun: "תליון",
+          metals: ["gold"], // זהב 14K בלבד
+          options: [metal(GOLD, "images/unique/og555.jpg")],
+          extras: []
+        },
+        {
+          code: "OG05", name: "OG05", noun: "צמיד",
+          // צמיד עור עם לוחית כסף
+          options: [metal(SILVER, "images/unique/og05.jpg")],
+          extras: []
+        },
+        {
+          code: "OG06", name: "OG06", noun: "טבעת",
+          // טבעת כסף רחבה עם אבנים
+          options: [metal(SILVER, "images/unique/og06.jpg")],
+          extras: []
+        },
+        {
+          code: "OG07", name: "OG07", noun: "שרשרת",
+          // שרשרת תליון עגול בכסף
+          options: [metal(SILVER, "images/unique/og07.jpg")],
+          extras: []
+        },
+        {
+          code: "R06", name: "R06", noun: "טבעת",
+          sizes: ["18"], // עותק אחד במידה 18
+          // טבעת עומר: טבעת כסף רחבה עם חריטה
+          options: [metal(SILVER, "images/rings/r06-silver.jpg")],
+          extras: []
+        }
+      ]
     }
   ]
 };
