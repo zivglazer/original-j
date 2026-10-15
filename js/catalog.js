@@ -13,7 +13,7 @@ window.CATALOG = {
   contact: {
     whatsapp: "972584500386",
     phoneDisplay: "058-450-0386",
-    instagram: "original_j_"
+    instagram: "_original_j"
   },
 
   categories: [
@@ -126,7 +126,7 @@ window.CATALOG = {
             { label: "על היד", img: "images/rings/r04-model.jpg" },
             { label: "על היד", img: "images/rings/rings-hand.jpg", metal: "silver" }
           ]
-        },,
+        },
         {
           code: "R07", name: "R07",
           sizes: ["15", "15.5", "16", "16.5", "17", "14 (זרת)", "14.5 (זרת)"], // מידות טבעת לבחירה, כולל זרת
