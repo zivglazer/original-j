@@ -59,7 +59,7 @@ window.PRICES = {
   // One of a Kind
   OG02: "360",
   OG03: "200",
-  OG555: "",
+  OG555: "289",
   OG05: "",
   OG06: "",
   OG07: ""

@@ -407,7 +407,7 @@ window.CATALOG = {
           options: []
         },
         {
-          code: "OG555", name: "OG555", noun: "תליון",
+          code: "OG555", name: "OG555", noun: "שרשרת",
           metals: ["gold"], // זהב 14K בלבד
           options: [metal(GOLD, "images/unique/og555.jpg")],
           extras: []

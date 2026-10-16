@@ -43,7 +43,7 @@ window.NAMES = {
   // One of a Kind
   OG02: "",
   OG03: "צמיד ORIGINAL",
-  OG555: "",
+  OG555: "שרשרת חמסה פוראבר",
   OG05: "",
   OG06: "",
   OG07: "שרשרת תליון עגול"
