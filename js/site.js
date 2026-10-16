@@ -89,8 +89,21 @@
     <div class="cart-foot">
       <p class="cart-discount" hidden></p>
       <p class="cart-total"></p>
-      <a class="ask cart-send" target="_blank" rel="noopener">שליחת ההזמנה בוואטסאפ</a>
-      <p class="cart-note">ההזמנה נשלחת בוואטסאפ, ומשם מתאמים תשלום ומשלוח.</p>
+      <div class="cart-choose">
+        <a class="ask cart-send" target="_blank" rel="noopener">שליחת ההזמנה בוואטסאפ</a>
+        <button class="ask ask-ghost cart-bit" type="button">תשלום בביט</button>
+        <p class="cart-note">בוואטסאפ מתאמים יחד תשלום ומשלוח. בביט משלמים עכשיו ושולחים את ההזמנה.</p>
+      </div>
+      <div class="bit-panel" hidden>
+        <ol class="bit-steps">
+          <li><span>הסכום לתשלום</span><b class="bit-sum"></b><button type="button" class="bit-copy" data-copy="sum">העתקה</button></li>
+          <li><span>מספר הביט</span><b dir="ltr" class="bit-phone"></b><button type="button" class="bit-copy" data-copy="phone">העתקה</button></li>
+          <li><span>פתחו את אפליקציית ביט, העבירו את הסכום למספר הזה, וחזרו ללחוץ "שילמתי".</span></li>
+        </ol>
+        <a class="ask ask-ghost bit-open" target="_blank" rel="noopener" hidden>פתיחת ביט</a>
+        <a class="ask bit-done" target="_blank" rel="noopener">שילמתי – שליחת ההזמנה</a>
+        <button class="cart-remove bit-back" type="button">חזרה לסל</button>
+      </div>
     </div>`;
   document.body.appendChild(drawer);
   drawer.addEventListener("click", (e) => { if (e.target === drawer) drawer.close(); });
@@ -102,6 +115,8 @@
     return ((variant && P[`${code}_${variant}`]) || P[code] || "").trim();
   };
   const priceNum = (v) => (/^[\d.,]+$/.test(v) ? parseFloat(v.replace(/,/g, "")) : null);
+
+  let bitTotal = null; // the exact cart total, for paying with Bit
 
   // One of a Kind pieces exist in a single copy, so their quantity stays 1.
   const oneOff = (code) => ((data.categories.find((c) => c.id === "unique") || { items: [] }).items).some((it) => it.code === code);
@@ -157,6 +172,50 @@
     const lines = cart.map((it) => `• ${it.title} (${it.code})${it.picks ? `, ${it.picks}` : ""}${it.qty > 1 ? ` ×${it.qty}` : ""}`);
     const extra = [...discountText, ...(total !== null && discounts.length ? [`סה״כ: ${total} ₪`] : [])];
     drawer.querySelector(".cart-send").href = waLink(`שלום, אשמח להזמין:\n${[...lines, ...extra].join("\n")}`);
+
+    // Bit: shown only when every price is known, so the total is exact.
+    bitTotal = total;
+    drawer.querySelector(".cart-bit").hidden = total === null;
+    if (total === null) showBit(false);
+    drawer.querySelector(".bit-sum").textContent = total !== null ? `${total} ₪` : "";
+    drawer.querySelector(".bit-done").href = waLink(
+      `שלום, שילמתי בביט על ההזמנה:\n${[...lines, ...discountText].join("\n")}\nאמצעי תשלום: ביט\nסכום ששולם: ${total} ₪`
+    );
+  }
+
+  // ---------- Paying with Bit: the amount and number to transfer to, then the order on WhatsApp ----------
+  const bitPhone = (data.contact.bit || "").replace(/\D/g, "");
+  drawer.querySelector(".bit-phone").textContent = bitPhone.replace(/^(\d{3})(\d{3})(\d+)$/, "$1-$2-$3");
+  function showBit(on) {
+    drawer.querySelector(".bit-panel").hidden = !on;
+    drawer.querySelector(".cart-choose").hidden = on;
+  }
+  drawer.querySelector(".cart-bit").addEventListener("click", () => { showBit(true); drawer.querySelector(".bit-panel").scrollIntoView({ block: "nearest" }); });
+  drawer.querySelector(".bit-back").addEventListener("click", () => showBit(false));
+  drawer.addEventListener("close", () => showBit(false));
+  drawer.querySelectorAll(".bit-copy").forEach((btn) => btn.addEventListener("click", async () => {
+    const text = btn.dataset.copy === "sum" ? String(bitTotal) : bitPhone;
+    try { await navigator.clipboard.writeText(text); }
+    catch (e) {
+      const t = document.createElement("textarea");
+      t.value = text; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); } catch (err) {}
+      t.remove();
+    }
+    btn.textContent = "הועתק ✓";
+    setTimeout(() => { btn.textContent = "העתקה"; }, 1600);
+  }));
+  if (!bitPhone) drawer.querySelector(".cart-bit").remove();
+  // Bit has no official link that fills in a number, so this opens Bit's official store page,
+  // which shows "Open" when the app is installed. Phones only.
+  const ua = navigator.userAgent;
+  const bitStore = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+    ? "https://apps.apple.com/il/app/bit/id1182007739"
+    : /Android/.test(ua) ? "https://play.google.com/store/apps/details?id=com.bnhp.payments.paymentsapp" : "";
+  if (bitStore) {
+    const open = drawer.querySelector(".bit-open");
+    open.href = bitStore;
+    open.hidden = false;
   }
   window.addToCart = (entry) => {
     const same = cart.find((it) => it.code === entry.code && it.picks === entry.picks);

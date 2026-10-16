@@ -437,3 +437,18 @@ a { color: inherit; }
 /* Discounted price */
 .price-was { color: var(--ink-soft); font-weight: 300; }
 .price-off { font-size: .8em; letter-spacing: .04em; color: var(--gold); white-space: nowrap; }
+
+/* Cart: pay with Bit */
+.cart-choose { display: grid; gap: 10px; }
+.cart-choose .ask, .bit-panel .ask { margin: 0; justify-content: center; }
+.cart-bit { border: 1px solid var(--ink); cursor: pointer; font: inherit; font-size: 15px; letter-spacing: .04em; }
+.bit-panel { display: grid; gap: 12px; }
+.bit-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: bit; }
+.bit-steps li { counter-increment: bit; display: grid; grid-template-columns: 26px 1fr auto; grid-template-areas: "n t b" "n v b"; align-items: center; column-gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--cream-2); font-size: 14px; color: var(--ink-soft); }
+.bit-steps li::before { content: counter(bit); grid-area: n; width: 26px; height: 26px; border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; display: grid; place-items: center; font-size: 13px; }
+.bit-steps li > span { grid-area: t; }
+.bit-steps li > b { grid-area: v; font-family: var(--f-display); font-weight: 400; font-size: 22px; color: var(--ink); justify-self: start; }
+.bit-steps li:last-child > span { grid-row: 1 / span 2; }
+.bit-copy { grid-area: b; border: 1px solid var(--cream-2); background: var(--ground); color: var(--ink); font: inherit; font-size: 13px; padding: 8px 12px; cursor: pointer; white-space: nowrap; }
+.bit-back { justify-self: center; }
+.cart-choose[hidden], .bit-panel[hidden], .cart-bit[hidden], .bit-open[hidden] { display: none; }

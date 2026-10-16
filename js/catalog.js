@@ -12,6 +12,7 @@ const metal = (base, path) => ({ ...base, img: path });
 window.CATALOG = {
   contact: {
     whatsapp: "972584500386",
+    bit: "0584500386", // מספר הטלפון לתשלום בביט
     phoneDisplay: "058-450-0386",
     instagram: "_original_j"
   },
