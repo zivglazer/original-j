@@ -91,7 +91,7 @@
         <legend>משלוח או איסוף</legend>
         <div class="choice-row">
           <label class="stamp"><input type="radio" name="cart-ship" value="home"><span class="stamp-text ship-home-label"></span></label>
-          <label class="stamp"><input type="radio" name="cart-ship" value="pickup"><span class="stamp-text">איסוף מבית העסק · חינם</span></label>
+          <label class="stamp"><input type="radio" name="cart-ship" value="pickup"><span class="stamp-text">איסוף מבית העסק, קריית אונו · חינם</span></label>
         </div>
         <p class="ship-need" hidden>בחרו משלוח או איסוף כדי להמשיך</p>
       </fieldset>
@@ -182,7 +182,7 @@
     const total = subtotal !== null ? subtotal - discounts.reduce((s, d) => s + d.amount, 0) + shipAdd : null;
     const discountText = discounts.map((d) => `${d.label}: −${d.amount} ₪`);
     if (shipChoice === "home") discountText.push(`משלוח עד הבית: ${shipFee} ₪`);
-    if (shipChoice === "pickup") discountText.push("איסוף מבית העסק (חינם)");
+    if (shipChoice === "pickup") discountText.push("איסוף מבית העסק בקריית אונו (חינם)");
     drawer.querySelector(".cart-discount").textContent = discountText.join(" · ");
     drawer.querySelector(".cart-discount").hidden = !discountText.length;
     drawer.querySelector(".cart-total").textContent = total !== null ? `סה״כ: ${total} ₪` : "";
