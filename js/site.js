@@ -87,6 +87,14 @@
     <ul class="cart-list"></ul>
     <p class="cart-empty">הסל ריק. אפשר להוסיף תכשיט מכל קטגוריה.</p>
     <div class="cart-foot">
+      <fieldset class="choice cart-ship">
+        <legend>משלוח או איסוף</legend>
+        <div class="choice-row">
+          <label class="stamp"><input type="radio" name="cart-ship" value="home"><span class="stamp-text ship-home-label"></span></label>
+          <label class="stamp"><input type="radio" name="cart-ship" value="pickup"><span class="stamp-text">איסוף מבית העסק · חינם</span></label>
+        </div>
+        <p class="ship-need" hidden>בחרו משלוח או איסוף כדי להמשיך</p>
+      </fieldset>
       <p class="cart-discount" hidden></p>
       <p class="cart-total"></p>
       <div class="cart-choose">
@@ -117,6 +125,8 @@
   const priceNum = (v) => (/^[\d.,]+$/.test(v) ? parseFloat(v.replace(/,/g, "")) : null);
 
   let bitTotal = null; // the exact cart total, for paying with Bit
+  const SHIP_KEY = "original_j_ship";
+  let shipChoice = (() => { try { return localStorage.getItem(SHIP_KEY) || ""; } catch (e) { return ""; } })();
 
   // One of a Kind pieces exist in a single copy, so their quantity stays 1.
   const oneOff = (code) => ((data.categories.find((c) => c.id === "unique") || { items: [] }).items).some((it) => it.code === code);
@@ -164,13 +174,20 @@
       const amount = Math.round(units.reduce((sum, u) => sum + u.slice(0, pairs).reduce((a, b) => a + b, 0), 0) * set.off / 100);
       if (amount) discounts.push({ label: `הנחת ${set.name} (${set.off}%)${pairs > 1 ? ` ×${pairs}` : ""}`, amount });
     });
-    const total = subtotal !== null ? subtotal - discounts.reduce((s, d) => s + d.amount, 0) : null;
+    // Delivery: home delivery adds the SHIPPING price, pickup is free.
+    const shipFee = priceNum(String((window.PRICES || {}).SHIPPING || "0")) || 0;
+    drawer.querySelector(".ship-home-label").textContent = `משלוח עד הבית · ${shipFee} ₪`;
+    drawer.querySelectorAll('input[name="cart-ship"]').forEach((r) => { r.checked = r.value === shipChoice; });
+    const shipAdd = shipChoice === "home" ? shipFee : 0;
+    const total = subtotal !== null ? subtotal - discounts.reduce((s, d) => s + d.amount, 0) + shipAdd : null;
     const discountText = discounts.map((d) => `${d.label}: −${d.amount} ₪`);
+    if (shipChoice === "home") discountText.push(`משלוח עד הבית: ${shipFee} ₪`);
+    if (shipChoice === "pickup") discountText.push("איסוף מבית העסק (חינם)");
     drawer.querySelector(".cart-discount").textContent = discountText.join(" · ");
-    drawer.querySelector(".cart-discount").hidden = !discounts.length;
+    drawer.querySelector(".cart-discount").hidden = !discountText.length;
     drawer.querySelector(".cart-total").textContent = total !== null ? `סה״כ: ${total} ₪` : "";
     const lines = cart.map((it) => `• ${it.title} (${it.code})${it.picks ? `, ${it.picks}` : ""}${it.qty > 1 ? ` ×${it.qty}` : ""}`);
-    const extra = [...discountText, ...(total !== null && discounts.length ? [`סה״כ: ${total} ₪`] : [])];
+    const extra = [...discountText, ...(total !== null && discountText.length ? [`סה״כ: ${total} ₪`] : [])];
     drawer.querySelector(".cart-send").href = waLink(`שלום, אשמח להזמין:\n${[...lines, ...extra].join("\n")}`);
 
     // Bit: shown only when every price is known, so the total is exact.
@@ -206,6 +223,22 @@
     setTimeout(() => { btn.textContent = "העתקה"; }, 1600);
   }));
   if (!bitPhone) drawer.querySelector(".cart-bit").remove();
+
+  // Delivery choice: kept in this browser, and needed before an order is sent.
+  drawer.querySelectorAll('input[name="cart-ship"]').forEach((r) => r.addEventListener("change", () => {
+    shipChoice = r.value;
+    try { localStorage.setItem(SHIP_KEY, shipChoice); } catch (e) {}
+    drawer.querySelector(".ship-need").hidden = true;
+    renderCart();
+  }));
+  drawer.querySelectorAll(".cart-send, .cart-bit, .bit-done").forEach((el) => el.addEventListener("click", (ev) => {
+    if (shipChoice) return;
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    const need = drawer.querySelector(".ship-need");
+    need.hidden = false;
+    need.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, true));
   // Bit has no official link that fills in a number, so this opens Bit's official store page,
   // which shows "Open" when the app is installed. Phones only.
   const ua = navigator.userAgent;

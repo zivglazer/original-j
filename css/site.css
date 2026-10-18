@@ -452,3 +452,10 @@ a { color: inherit; }
 .bit-copy { grid-area: b; border: 1px solid var(--cream-2); background: var(--ground); color: var(--ink); font: inherit; font-size: 13px; padding: 8px 12px; cursor: pointer; white-space: nowrap; }
 .bit-back { justify-self: center; }
 .cart-choose[hidden], .bit-panel[hidden], .cart-bit[hidden], .bit-open[hidden] { display: none; }
+
+/* Cart: delivery or pickup */
+.cart-ship { margin: 0 0 4px; }
+.cart-ship .choice-row { display: grid; gap: 8px; }
+.cart-ship .stamp { justify-content: center; }
+.ship-need { margin: 8px 0 0; font-size: 13px; color: #9b3b2f; }
+.ship-need[hidden] { display: none; }
