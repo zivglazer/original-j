@@ -409,8 +409,11 @@ window.CATALOG = {
         {
           code: "OG555", name: "OG555", noun: "שרשרת",
           metals: ["gold"], // זהב 14K בלבד
-          options: [metal(GOLD, "images/unique/og555.jpg")],
-          extras: []
+          options: [metal(GOLD, "images/unique/og555-model.jpg")],
+          extras: [
+            { label: "מקרוב", img: "images/unique/og555-hand.jpg" },
+            { label: "התליון", img: "images/unique/og555.jpg" }
+          ]
         },
         {
           code: "OG05", name: "OG05", noun: "צמיד",
